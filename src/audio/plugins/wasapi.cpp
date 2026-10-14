@@ -22,6 +22,7 @@
 #include <Audioclient.h>
 #include <endpointvolume.h>
 #include <functiondiscoverykeys.h>
+#include <cmath>
 #include <QThread>
 #include <QCoreApplication>
 

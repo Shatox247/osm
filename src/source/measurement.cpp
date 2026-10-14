@@ -863,7 +863,7 @@ void Measurement::updateAudio()
     m_audioStream = nullptr;
     checkChannels();
     if (active()) {
-        std::async([this]() {
+        (void)std::async([this]() {
             audio::Format format = audio::Client::getInstance()->deviceInputFormat(m_deviceId);
             setSampleRate(format.sampleRate);
             m_input.setCallback([this](const char *buffer, qint64 size) {
