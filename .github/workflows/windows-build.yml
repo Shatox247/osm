@@ -19,19 +19,23 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: 5.15.2
-          arch: win64_mingw81
+          arch: win64_msvc2019_64
           cache: true
 
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
       - name: Build application
-        shell: pwsh
+        shell: cmd
         run: |
-          where.exe qmake
-          where.exe g++
-          where.exe mingw32-make
+          where qmake
+          where cl
+          where nmake
           qmake -v
-          g++ --version
           qmake OpenSoundMeter.pro CONFIG+=release
-          mingw32-make -j2
+          nmake
 
       - name: Bundle Qt dependencies
         shell: pwsh

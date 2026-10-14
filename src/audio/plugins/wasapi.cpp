@@ -17,8 +17,6 @@
  */
 
 #include <initguid.h>
-#include <wtypes.h>
-#include <ksmedia.h>
 #include "wasapi.h"
 #include <comdef.h>
 #include <Audioclient.h>
