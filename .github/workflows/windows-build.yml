@@ -20,7 +20,6 @@ jobs:
         with:
           version: 5.15.2
           arch: win64_mingw81
-          modules: qtmultimedia
           cache: true
 
       - name: Build application
