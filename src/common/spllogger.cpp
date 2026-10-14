@@ -6,11 +6,14 @@
 
 #include <QDateTime>
 #include <QDir>
+#include <QFileInfo>
 #include <QLocale>
+#include <QStandardPaths>
 #include <QTextStream>
 #include <QDebug>
 
 #include "model/metertablemodel.h"
+#include "notifier.h"
 
 SplLogger::SplLogger(QObject *parent) : QObject(parent), m_file(filePath())
 {
@@ -25,7 +28,8 @@ bool SplLogger::running() const
 
 QString SplLogger::filePath() const
 {
-    return QDir::root().filePath(QStringLiteral("OpenSoundMeter-spl.csv"));
+    const QString appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    return QDir(appDataPath).filePath(QStringLiteral("OpenSoundMeter-spl.csv"));
 }
 
 QString SplLogger::lastError() const
@@ -54,9 +58,15 @@ void SplLogger::start()
         return;
     }
 
-    m_file.setFileName(filePath());
+    const QFileInfo targetInfo(filePath());
+    if (!QDir().mkpath(targetInfo.absolutePath())) {
+        setError(QStringLiteral("Could not create the SPL log directory: %1").arg(targetInfo.absolutePath()));
+        return;
+    }
+
+    m_file.setFileName(targetInfo.absoluteFilePath());
     if (!m_file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
-        setError(QStringLiteral("Could not open %1: %2").arg(filePath(), m_file.errorString()));
+        setError(QStringLiteral("Could not open %1: %2").arg(targetInfo.absoluteFilePath(), m_file.errorString()));
         return;
     }
 
@@ -129,5 +139,6 @@ void SplLogger::setError(const QString &error)
     }
     m_lastError = error;
     qWarning() << m_lastError;
+    Notifier::getInstance()->newMessage(QStringLiteral("SPL logging"), m_lastError);
     emit lastErrorChanged();
 }
