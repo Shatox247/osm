@@ -25,11 +25,13 @@ jobs:
       - name: Select Qt MinGW toolchain
         shell: pwsh
         run: |
-          $toolchain = Get-ChildItem "$env:QT_ROOT_DIR\Tools" -Directory |
-            Where-Object { $_.Name -match '^mingw' } |
+          $qtVersionDir = Split-Path $env:QT_ROOT_DIR -Parent
+          $qtInstallDir = Split-Path $qtVersionDir -Parent
+          $toolchain = Get-ChildItem (Join-Path $qtInstallDir "Tools") -Directory |
+            Where-Object { $_.Name -match '^mingw' -and (Test-Path (Join-Path $_.FullName "bin\g++.exe")) } |
             Select-Object -First 1
           if (-not $toolchain) {
-            throw "Could not find the MinGW toolchain installed with Qt in $env:QT_ROOT_DIR\Tools."
+            throw "Could not find a Qt MinGW toolchain in $(Join-Path $qtInstallDir 'Tools')."
           }
           $mingwBin = Join-Path $toolchain.FullName "bin"
           if (-not (Test-Path (Join-Path $mingwBin "g++.exe"))) {
