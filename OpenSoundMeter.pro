@@ -342,7 +342,11 @@ win32 {
     SOURCES += \
         src/audio/plugins/wasapi.cpp
 
-    LIBS += ole32.lib
+    win32-g++ {
+        LIBS += -lole32
+    } else {
+        LIBS += ole32.lib
+    }
 
     exists($$PWD/../asiosdk/*) {
         DEFINES += USE_ASIO
@@ -366,7 +370,11 @@ win32 {
             $$PWD/../asiosdk/host/asiodrivers.cpp \
             $$PWD/../asiosdk/host/pc/asiolist.cpp
 
-        LIBS += Advapi32.lib
+        win32-g++ {
+            LIBS += -ladvapi32
+        } else {
+            LIBS += Advapi32.lib
+        }
     }
 }
 
