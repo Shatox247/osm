@@ -22,31 +22,14 @@ jobs:
           arch: win64_mingw81
           cache: true
 
-      - name: Select Qt MinGW toolchain
-        shell: pwsh
-        run: |
-          $qtVersionDir = Split-Path $env:QT_ROOT_DIR -Parent
-          $qtInstallDir = Split-Path $qtVersionDir -Parent
-          $toolchain = Get-ChildItem (Join-Path $qtInstallDir "Tools") -Directory |
-            Where-Object { $_.Name -match '^mingw' -and (Test-Path (Join-Path $_.FullName "bin\g++.exe")) } |
-            Select-Object -First 1
-          if (-not $toolchain) {
-            throw "Could not find a Qt MinGW toolchain in $(Join-Path $qtInstallDir 'Tools')."
-          }
-          $mingwBin = Join-Path $toolchain.FullName "bin"
-          if (-not (Test-Path (Join-Path $mingwBin "g++.exe"))) {
-            throw "The Qt MinGW toolchain does not contain g++.exe: $mingwBin"
-          }
-          "$mingwBin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          "Using Qt MinGW toolchain: $mingwBin"
-          & (Join-Path $mingwBin "g++.exe") --version
-
       - name: Build application
         shell: pwsh
         run: |
           where.exe qmake
           where.exe g++
           where.exe mingw32-make
+          qmake -v
+          g++ --version
           qmake OpenSoundMeter.pro CONFIG+=release
           mingw32-make -j2
 
