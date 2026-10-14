@@ -102,6 +102,20 @@ Drawer {
             }
         }
         ListElement {
+            name: qsTr("SPL logging")
+            onclick: function(button) {
+                if (splLogger.running) {
+                    splLogger.stop();
+                } else {
+                    splLogger.start();
+                }
+                button.text = (splLogger.running ? qsTr("Stop SPL logging") : qsTr("Start SPL logging"));
+            }
+            oncompleted: function(button) {
+                button.text = (splLogger.running ? qsTr("Stop SPL logging") : qsTr("Start SPL logging"));
+            }
+        }
+        ListElement {
             name: qsTr("Show Experimental");
             onclick: function(button) {
                 applicationAppearance.experimentFunctions = ! applicationAppearance.experimentFunctions;

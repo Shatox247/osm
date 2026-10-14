@@ -11,6 +11,13 @@ Current version: v1.4.1
 
 Qt5.15 C++17
 
+## SPL logging
+
+Use **File > Start SPL logging** (or the side menu) to write the numerical values
+currently shown by the SPL meters to `OpenSoundMeter-spl.csv` in the Windows
+drive root (for example, `C:/OpenSoundMeter-spl.csv`). Samples are written at a
+fixed one-second interval. Stop logging from the same menu.
+
 
 ## SAST Tools
 

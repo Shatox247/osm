@@ -1,0 +1,49 @@
+name: Build Windows application
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-windows:
+    runs-on: windows-2022
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 5.15.2
+          arch: win64_mingw81
+          modules: qtmultimedia
+          cache: true
+
+      - name: Build application
+        shell: pwsh
+        run: |
+          qmake OpenSoundMeter.pro CONFIG+=release
+          mingw32-make -j2
+
+      - name: Bundle Qt dependencies
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path package | Out-Null
+          Copy-Item release\OpenSoundMeter.exe package\
+          windeployqt `
+            --release `
+            --qmldir qml `
+            --compiler-runtime `
+            package\OpenSoundMeter.exe
+          Copy-Item README.md package\
+
+      - name: Upload Windows application
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenSoundMeter-windows
+          path: package
+          if-no-files-found: error

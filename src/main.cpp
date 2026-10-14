@@ -23,6 +23,7 @@
 #include <QFontDatabase>
 #include "common/settings.h"
 #include "common/logger.h"
+#include "common/spllogger.h"
 #include "common/notifier.h"
 #include "src/generator/generator.h"
 #include "src/targettrace.h"
@@ -92,6 +93,7 @@ int main(int argc, char *argv[])
     AutoSaver autoSaver(settings.getGroup("autosaver"), sourceList);
     auto t = new TargetTrace(settings.getGroup("targettrace"));
     auto notifier = Notifier::getInstance();
+    SplLogger splLogger;
 
     auto client = remote::Client(settings.getGroup("apiClient"));
     client.setSourceList(sourceList);
@@ -131,6 +133,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("generatorModel", generator.get());
     engine.rootContext()->setContextProperty("targetTraceModel", t);
     engine.rootContext()->setContextProperty("notifier", notifier);
+    engine.rootContext()->setContextProperty("splLogger", &splLogger);
 
     engine.rootContext()->setContextProperty("autoSaver", &autoSaver);
 

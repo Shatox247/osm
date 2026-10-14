@@ -81,6 +81,19 @@ void MeterTableModel::setSettings(Settings *newSettings)
     }
 }
 
+QList<Chart::MeterPlot *> MeterTableModel::meterPlots() const
+{
+    QList<Chart::MeterPlot *> plots;
+    for (const auto &row : m_data) {
+        for (const auto &cell : row) {
+            if (cell) {
+                plots.append(cell.get());
+            }
+        }
+    }
+    return plots;
+}
+
 SourceList *MeterTableModel::sourceList() const
 {
     return m_sourceList;

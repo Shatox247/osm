@@ -19,6 +19,7 @@
 #define METERTABLEMODEL_H
 
 #include <QAbstractListModel>
+#include <QList>
 #include <QtQml>
 
 #include "common/settings.h"
@@ -57,6 +58,8 @@ public:
 
     Settings *settings() const;
     void setSettings(Settings *newSettings);
+
+    QList<Chart::MeterPlot *> meterPlots() const;
 
 signals:
     void columnsChanged(int);

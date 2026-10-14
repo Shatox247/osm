@@ -47,6 +47,7 @@ Item {
         Component.onCompleted: {
             model.sourceList = sourceList;
             model.settings = control.settings;
+            splLogger.setModel(model);
         }
         delegate: SPL.Meter {
             gridRef: view

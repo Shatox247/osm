@@ -49,6 +49,7 @@ SOURCES += src/main.cpp \
     src/common/workingfolder.cpp \
     src/common/appearance.cpp \
     src/common/logger.cpp \
+    src/common/spllogger.cpp \
     src/common/notifier.cpp \
     src/common/profiler.cpp \
     src/common/settings.cpp \
@@ -212,6 +213,7 @@ HEADERS += \
     src/inputdevice.h \
     src/common/appearance.h \
     src/common/logger.h \
+    src/common/spllogger.h \
     src/generator/mnoise.h \
     src/common/notifier.h \
     src/common/profiler.h \

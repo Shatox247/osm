@@ -209,6 +209,15 @@ MenuBar {
             checked: targetTraceModel.show
             onCheckedChanged: targetTraceModel.show = checked
         }
+        MenuSeparator {}
+        MenuItem {
+            text: splLogger.running ? qsTr("Stop SPL logging") : qsTr("Start SPL logging")
+            onTriggered: splLogger.running ? splLogger.stop() : splLogger.start()
+        }
+        MenuItem {
+            text: qsTr("SPL log path: ") + splLogger.filePath
+            enabled: false
+        }
         MenuItem {
             text: qsTr("Quit")
             shortcut: StandardKey.Quit
