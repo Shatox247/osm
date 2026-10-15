@@ -376,6 +376,7 @@ Item {
     }
 
     SPL.Grid {
+        active: chart.visible
         enabled: chart.type == "Numeric"
         visible: chart.type == "Numeric"
 

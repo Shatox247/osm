@@ -25,7 +25,17 @@ import OpenSoundMeterModule 1.0
 Item {
     id: control
     property alias settings: model.settings
+    property bool active: true
     anchors.fill: parent
+
+    function bindLogger() {
+        if (visible && active) {
+            splLogger.setModel(model);
+        }
+    }
+
+    onVisibleChanged: bindLogger()
+    onActiveChanged: bindLogger()
 
     TableView{
         id: view
@@ -47,7 +57,7 @@ Item {
         Component.onCompleted: {
             model.sourceList = sourceList;
             model.settings = control.settings;
-            splLogger.setModel(model);
+            control.bindLogger();
         }
         delegate: SPL.Meter {
             gridRef: view

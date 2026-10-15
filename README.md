@@ -11,15 +11,17 @@ Current version: v1.4.1
 
 Qt5.15 C++17
 
-## SPL logging
+## Additional functionality of this fork: SPL logging
 
 Use **File > Start SPL logging** (or the side menu) to write the numerical values
-currently shown by the SPL meters to `OpenSoundMeter-spl.csv` in the Windows
+currently shown by the SPL meters to `SPL_Log_DATE_TIME.csv` per default in the Windows
 user application-data directory on the C: drive (for example,
-`C:/Users/<user>/AppData/Local/opensoundmeter/OpenSoundMeter/OpenSoundMeter-spl.csv`).
+`C:/Users/<user>/AppData/Local/opensoundmeter/OpenSoundMeter/SPL_Log_2026-10-25_21-51-48.csv`).
+The location to write to is displayed in the field below the start/stop button, below that is a button to set a new target directory.
 Samples are written at a fixed one-second interval. Stop logging from the same
-menu. If the file cannot be created, the application displays the reason.
+menu. 
 
+The csv contains a collumn for each numeric guage displayed in the software, but there might be some duplicates in there since the 
 
 ## SAST Tools
 
