@@ -16,7 +16,7 @@ class SplLogger : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool running READ running NOTIFY runningChanged)
-    Q_PROPERTY(QString filePath READ filePath CONSTANT)
+    Q_PROPERTY(QString filePath READ filePath NOTIFY filePathChanged)
     Q_PROPERTY(QString lastError READ lastError NOTIFY lastErrorChanged)
 
 public:
@@ -27,11 +27,13 @@ public:
     QString lastError() const;
 
     Q_INVOKABLE void setModel(MeterTableModel *model);
+    Q_INVOKABLE void setDirectory(const QString &directory);
     Q_INVOKABLE void start();
     Q_INVOKABLE void stop();
 
 signals:
     void runningChanged();
+    void filePathChanged();
     void lastErrorChanged();
 
 private slots:
@@ -40,6 +42,7 @@ private slots:
 private:
     static constexpr int LoggingIntervalMs = 1000;
 
+    QString generatedFilePath() const;
     QString csvValue(const QString &value) const;
     QString csvHeader(const QString &value) const;
     void setError(const QString &error);
@@ -47,6 +50,8 @@ private:
     MeterTableModel *m_model = nullptr;
     QFile m_file;
     QTimer m_timer;
+    QString m_directory;
+    QString m_filePath;
     QString m_lastError;
 };
 

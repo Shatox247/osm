@@ -219,6 +219,10 @@ MenuBar {
             enabled: false
         }
         MenuItem {
+            text: qsTr("Choose SPL log folder...")
+            onTriggered: splLogDirectoryDialog.open()
+        }
+        MenuItem {
             text: qsTr("Quit")
             shortcut: StandardKey.Quit
             onTriggered: applicationWindow.close();

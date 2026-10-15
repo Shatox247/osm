@@ -15,7 +15,11 @@
 #include "model/metertablemodel.h"
 #include "notifier.h"
 
-SplLogger::SplLogger(QObject *parent) : QObject(parent), m_file(filePath())
+SplLogger::SplLogger(QObject *parent)
+    : QObject(parent),
+      m_file(),
+      m_directory(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)),
+      m_filePath(generatedFilePath())
 {
     m_timer.setInterval(LoggingIntervalMs);
     connect(&m_timer, &QTimer::timeout, this, &SplLogger::writeSample);
@@ -28,13 +32,21 @@ bool SplLogger::running() const
 
 QString SplLogger::filePath() const
 {
-    const QString appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-    return QDir(appDataPath).filePath(QStringLiteral("OpenSoundMeter-spl.csv"));
+    return m_filePath;
 }
 
 QString SplLogger::lastError() const
 {
     return m_lastError;
+}
+
+QString SplLogger::generatedFilePath() const
+{
+    const QDateTime now = QDateTime::currentDateTime();
+    const QString fileName = QStringLiteral("SPL_Log_%1_%2.csv")
+                                 .arg(now.toString(QStringLiteral("yyyy-MM-dd")),
+                                      now.toString(QStringLiteral("HH-mm-ss")));
+    return QDir(m_directory).filePath(fileName);
 }
 
 void SplLogger::setModel(MeterTableModel *model)
@@ -48,6 +60,26 @@ void SplLogger::setModel(MeterTableModel *model)
     m_model = model;
 }
 
+void SplLogger::setDirectory(const QString &directory)
+{
+    if (directory.isEmpty()) {
+        return;
+    }
+
+    const QString cleanDirectory = QDir::cleanPath(directory);
+    if (m_directory == cleanDirectory) {
+        return;
+    }
+
+    if (running()) {
+        stop();
+    }
+
+    m_directory = cleanDirectory;
+    m_filePath = generatedFilePath();
+    emit filePathChanged();
+}
+
 void SplLogger::start()
 {
     if (running()) {
@@ -58,7 +90,10 @@ void SplLogger::start()
         return;
     }
 
-    const QFileInfo targetInfo(filePath());
+    m_filePath = generatedFilePath();
+    emit filePathChanged();
+
+    const QFileInfo targetInfo(m_filePath);
     if (!QDir().mkpath(targetInfo.absolutePath())) {
         setError(QStringLiteral("Could not create the SPL log directory: %1").arg(targetInfo.absolutePath()));
         return;
@@ -115,7 +150,7 @@ void SplLogger::writeSample()
     }
     stream << values.join(QLatin1Char(',')) << Qt::endl;
     if (stream.status() != QTextStream::Ok) {
-        setError(QStringLiteral("Could not write to %1.").arg(filePath()));
+        setError(QStringLiteral("Could not write to %1.").arg(m_filePath));
         stop();
     }
 }

@@ -116,6 +116,12 @@ Drawer {
             }
         }
         ListElement {
+            name: qsTr("Choose SPL log folder...")
+            onclick: function() {
+                splLogDirectoryDialog.open();
+            }
+        }
+        ListElement {
             name: qsTr("Show Experimental");
             onclick: function(button) {
                 applicationAppearance.experimentFunctions = ! applicationAppearance.experimentFunctions;
