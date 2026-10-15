@@ -20,8 +20,7 @@ user application-data directory on the C: drive (for example,
 The location to write to is displayed in the field below the start/stop button, below that is a button to set a new target directory.
 Samples are written at a fixed one-second interval. Stop logging from the same
 menu. 
-
-The csv contains a collumn for each numeric guage displayed in the software, but there might be some duplicates in there since the 
+The csv contains a leading column with the time stamp followed by a column for each meter in all visible numeric graphs.
 
 ## SAST Tools
 

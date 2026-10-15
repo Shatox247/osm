@@ -6,7 +6,9 @@
 #define SPLLOGGER_H
 
 #include <QFile>
+#include <QList>
 #include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QTimer>
 
@@ -26,7 +28,8 @@ public:
     QString filePath() const;
     QString lastError() const;
 
-    Q_INVOKABLE void setModel(MeterTableModel *model);
+    Q_INVOKABLE void addModel(MeterTableModel *model);
+    Q_INVOKABLE void removeModel(MeterTableModel *model);
     Q_INVOKABLE void setDirectory(const QString &directory);
     Q_INVOKABLE void start();
     Q_INVOKABLE void stop();
@@ -43,11 +46,12 @@ private:
     static constexpr int LoggingIntervalMs = 1000;
 
     QString generatedFilePath() const;
+    void removeDestroyedModels();
     QString csvValue(const QString &value) const;
     QString csvHeader(const QString &value) const;
     void setError(const QString &error);
 
-    MeterTableModel *m_model = nullptr;
+    QList<QPointer<MeterTableModel>> m_models;
     QFile m_file;
     QTimer m_timer;
     QString m_directory;

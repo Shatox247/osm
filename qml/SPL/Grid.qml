@@ -30,12 +30,15 @@ Item {
 
     function bindLogger() {
         if (visible && active) {
-            splLogger.setModel(model);
+            splLogger.addModel(model);
+        } else {
+            splLogger.removeModel(model);
         }
     }
 
     onVisibleChanged: bindLogger()
     onActiveChanged: bindLogger()
+    Component.onDestruction: splLogger.removeModel(model)
 
     TableView{
         id: view

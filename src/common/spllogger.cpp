@@ -50,15 +50,68 @@ QString SplLogger::generatedFilePath() const
     return QDir(m_directory).filePath(fileName);
 }
 
-void SplLogger::setModel(MeterTableModel *model)
+void SplLogger::addModel(MeterTableModel *model)
 {
-    if (m_model == model) {
+    removeDestroyedModels();
+    if (!model) {
         return;
     }
+
+    for (const auto &registeredModel : m_models) {
+        if (registeredModel == model) {
+            return;
+        }
+    }
+
     if (running()) {
         stop();
     }
-    m_model = model;
+    m_models.append(QPointer<MeterTableModel>(model));
+    connect(model, &QObject::destroyed, this, [this]() {
+        removeDestroyedModels();
+    });
+}
+
+void SplLogger::removeDestroyedModels()
+{
+    bool removed = false;
+    for (auto it = m_models.begin(); it != m_models.end();) {
+        if (it->isNull()) {
+            it = m_models.erase(it);
+            removed = true;
+        } else {
+            ++it;
+        }
+    }
+
+    if (removed && running()) {
+        stop();
+    }
+}
+
+void SplLogger::removeModel(MeterTableModel *model)
+{
+    if (!model) {
+        return;
+    }
+
+    bool removed = false;
+    for (auto it = m_models.begin(); it != m_models.end();) {
+        if (it->isNull() || it->data() == model) {
+            it = m_models.erase(it);
+            removed = true;
+        } else {
+            ++it;
+        }
+    }
+
+    if (!removed) {
+        return;
+    }
+
+    if (running()) {
+        stop();
+    }
 }
 
 void SplLogger::setDirectory(const QString &directory)
@@ -92,7 +145,8 @@ void SplLogger::start()
     if (running()) {
         return;
     }
-    if (!m_model) {
+    removeDestroyedModels();
+    if (m_models.isEmpty()) {
         setError(QStringLiteral("The SPL meter model is not available."));
         return;
     }
@@ -114,8 +168,11 @@ void SplLogger::start()
 
     QTextStream stream(&m_file);
     QStringList headers {QStringLiteral("timestamp")};
-    for (auto *meter : m_model->meterPlots()) {
-        headers.append(csvHeader(meter->sourceName() + QStringLiteral(" ") + meter->title()));
+    for (const auto &registeredModel : m_models) {
+        auto *model = registeredModel.data();
+        for (auto *meter : model->meterPlots()) {
+            headers.append(csvHeader(meter->sourceName() + QStringLiteral(" ") + meter->title()));
+        }
     }
     stream << headers.join(QLatin1Char(',')) << Qt::endl;
     m_file.flush();
@@ -138,22 +195,25 @@ void SplLogger::stop()
 
 void SplLogger::writeSample()
 {
-    if (!m_model || !m_file.isOpen()) {
+    if (m_models.isEmpty() || !m_file.isOpen()) {
         stop();
         return;
     }
 
     QTextStream stream(&m_file);
     QStringList values {QDateTime::currentDateTime().toString(Qt::ISODate)};
-    for (auto *meter : m_model->meterPlots()) {
-        bool ok = false;
-        const QString displayedValue = meter->value();
-        QString numericValue = displayedValue;
-        if (numericValue.endsWith(QLatin1Char('%')) || numericValue.endsWith(QChar(0x2030))) {
-            numericValue.chop(1);
+    for (const auto &registeredModel : m_models) {
+        auto *model = registeredModel.data();
+        for (auto *meter : model->meterPlots()) {
+            bool ok = false;
+            const QString displayedValue = meter->value();
+            QString numericValue = displayedValue;
+            if (numericValue.endsWith(QLatin1Char('%')) || numericValue.endsWith(QChar(0x2030))) {
+                numericValue.chop(1);
+            }
+            const double value = QLocale::c().toDouble(numericValue, &ok);
+            values.append(ok ? QLocale::c().toString(value, 'f', 3) : QString());
         }
-        const double value = QLocale::c().toDouble(numericValue, &ok);
-        values.append(ok ? QLocale::c().toString(value, 'f', 3) : QString());
     }
     stream << values.join(QLatin1Char(',')) << Qt::endl;
     if (stream.status() != QTextStream::Ok) {
