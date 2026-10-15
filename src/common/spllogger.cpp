@@ -11,6 +11,7 @@
 #include <QStandardPaths>
 #include <QTextStream>
 #include <QDebug>
+#include <QUrl>
 
 #include "model/metertablemodel.h"
 #include "notifier.h"
@@ -66,7 +67,13 @@ void SplLogger::setDirectory(const QString &directory)
         return;
     }
 
-    const QString cleanDirectory = QDir::cleanPath(directory);
+    QString localDirectory = directory;
+    const QUrl url(directory);
+    if (url.isLocalFile()) {
+        localDirectory = url.toLocalFile();
+    }
+
+    const QString cleanDirectory = QDir::cleanPath(localDirectory);
     if (m_directory == cleanDirectory) {
         return;
     }

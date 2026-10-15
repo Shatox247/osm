@@ -224,6 +224,6 @@ ApplicationWindow {
         selectFolder: true
         title: qsTr("Choose a folder for SPL log files")
         folder: (typeof shortcuts !== 'undefined' ? shortcuts.home : Filesystem.StandardFolder.Home)
-        onAccepted: splLogger.setDirectory(fileUrl.toLocalFile())
+        onAccepted: splLogger.setDirectory(fileUrl)
     }
 }
