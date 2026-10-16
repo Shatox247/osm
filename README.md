@@ -1,3 +1,11 @@
+# Open Sound Meter Fork with SPL Data logging capability 
+Got annoyed by waiting for OSM getting SPL logging functionality. Therefore here is a version with exactly that. It outputs a csv with the contents from all visible meters, logged every second.
+In the file menu on the top bar is a button to start/stop logging, the path to the current log storage location and a button to select a new destination.
+I also quickly vibe coded a small viewer for the log csvs that plots the graphs and lets you choose which sources shall be displayed, available at https://github.com/Shatox247/SPL_Log_Viewer .
+
+If you don't hate yourself enough to deal with Qt5 compilation (apparently Pavel is working on a port to Qt6) you can use the windows application compiled by an automatic github action. (repo > actions > latestRun > artefacts > osm windows zip).
+Obviously Windows will warn you when starting the application, since it isn't signed or anything. But since its opensource, you can just look up the diff between the main osm repo and this fork and judge for yourself.
+
 # Open Sound Meter
 Crossplatform measurement software for tuning sound systems.
 
